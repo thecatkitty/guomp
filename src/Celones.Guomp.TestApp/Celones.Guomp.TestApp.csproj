@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Celones.Device\Celones.Device.csproj" />
-    <ProjectReference Include="..\Celones.Guomp.Display\Celones.Guomp.Display.csproj" />
+    <ProjectReference Include="..\Celones.Guomp.Displays\Celones.Guomp.Displays.csproj" />
     <ProjectReference Include="..\Celones.Guomp\Celones.Guomp.csproj" />
   </ItemGroup>
 

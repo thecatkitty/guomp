@@ -1,7 +1,8 @@
-﻿using SkiaSharp;
+﻿using Celones.Guomp.Displays;
+using SkiaSharp;
 
 var pcd = new Celones.Device.Pcd8544(null, null, 0, 0);
-var display = new Celones.Guomp.Display.Nokia5110(pcd, null);
+var display = new Nokia5110(pcd, null);
 
 var paint = new SKPaint
 {

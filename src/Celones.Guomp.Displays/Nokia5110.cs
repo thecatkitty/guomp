@@ -3,27 +3,25 @@ using Celones.Device;
 using Celones.Guomp.Extensions;
 using SkiaSharp;
 
-namespace Celones.Guomp.Display
+namespace Celones.Guomp.Displays
 {
-    public class Nokia5110
+    public class Nokia5110 : Display
     {
         private readonly Pcd8544 m_ctl;
         private readonly PwmChannel m_bl;
 
         private double m_contrast;
 
-        private readonly SKSurface m_img;
+        public override int Width => m_ctl.DramSizeX;
+        public override int Height => m_ctl.DramSizeY * 8;
 
-        public int Width => m_ctl.DramSizeX;
-        public int Height => m_ctl.DramSizeY * 8;
-
-        public double Brightness
+        public override double Brightness
         {
             get => m_bl.DutyCycle;
             set => m_bl.DutyCycle = value;
         }
 
-        public double Contrast
+        public override double Contrast
         {
             get => m_contrast;
             set {
@@ -34,19 +32,14 @@ namespace Celones.Guomp.Display
             }
         }
 
-        public SKCanvas Canvas { get; }
-
         public Nokia5110(Pcd8544 controller, PwmChannel backLight)
         {
             m_ctl = controller;
             m_bl = backLight;
             
-            SKImageInfo info = new(Width, Height);
-            m_img = SKSurface.Create(info);
-            Canvas = m_img.Canvas;
         }
 
-        public void Initialize()
+        public override void Initialize()
         {
             m_ctl.Initialize();
             m_bl.Start();
@@ -55,7 +48,7 @@ namespace Celones.Guomp.Display
             Contrast = 1.0;
         }
         
-        public void Clear() {
+        public override void Clear() {
             for (var index = 0; index < m_ctl.DramSizeX * m_ctl.DramSizeY; index++) {
                 //m_ctl.Write(0x00);
             }
@@ -63,11 +56,9 @@ namespace Celones.Guomp.Display
             Canvas.Clear(SKColor.Empty);
         }
 
-        public void Update() => Update(new SKRectI(0, 0, Width, Height));
-
-        public void Update(SKRectI rect)
+        public override void Update(SKRectI rect)
         {
-            var pixels = m_img.Snapshot().PeekPixels();
+            var pixels = Surface.Snapshot().PeekPixels();
             rect.Intersect(new SKRectI(0, 0, Width, Height));
 
             var segmentEnd = (int)Math.Ceiling((rect.Top + rect.Height) / 8.0);
@@ -89,10 +80,5 @@ namespace Celones.Guomp.Display
                 }
             }
         }
-
-        public void Capture(string path)
-        {
-            File.WriteAllBytes(path, m_img.Snapshot().Encode().ToArray());
-        } 
     }
 }
