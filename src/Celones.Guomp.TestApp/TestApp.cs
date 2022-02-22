@@ -17,6 +17,6 @@ var font = new SKFont
 
 display.Clear();
 display.Canvas.DrawLine(new SKPoint(5, 5), new SKPoint(60, 20), paint);
-display.Canvas.DrawText("Lorem Ipsum", 5, 30, font, paint);
+display.Canvas.DrawText("Hello World!", 5, 30, font, paint);
 
-display.SaveScreenshot("screenshot.png");
+display.Capture("capture.png");

@@ -3,17 +3,13 @@ using System.Device.Spi;
 
 namespace Celones.Device {
   public class Pcd8544 {
-    private SpiDevice _spi;
-    private GpioController _gpio;
-    private int _res, _dc;
+    private readonly SpiDevice m_spi;
+    private readonly GpioController m_gpio;
+    private readonly int m_res;
+    private readonly int m_dc;
 
-    public int DramSizeX { get => 84; }
-    public int DramSizeY { get => 6; }
-
-    public enum PayloadType {
-      Command = 0,
-      Data = 1
-    }
+    public int DramSizeX => 84;
+    public int DramSizeY => 6;
 
     public enum PowerMode {
       Active = 0,
@@ -49,7 +45,7 @@ namespace Celones.Device {
       public static Instruction SetBiasSystem(int biasSystem) => new((byte)(16 | (biasSystem & 7)));
       public static Instruction SetOperationVoltage(int voltage) => new((byte)(128 | (voltage & 127)));
 
-      public byte Code { get; private set; }
+      public byte Code { get; }
 
       private Instruction(byte code) {
         Code = code;
@@ -57,19 +53,19 @@ namespace Celones.Device {
     }
 
     public Pcd8544(SpiDevice spiChannel, GpioController gpioController, int resetPin, int dcPin) {
-      _spi = spiChannel;
-      _gpio = gpioController;
-      _res = resetPin;
-      _dc = dcPin;
+      m_spi = spiChannel;
+      m_gpio = gpioController;
+      m_res = resetPin;
+      m_dc = dcPin;
     }
 
     public void Initialize() {
-      _gpio.OpenPin(_res, PinMode.Output);
-      _gpio.OpenPin(_dc, PinMode.Output);
+      m_gpio.OpenPin(m_res, PinMode.Output);
+      m_gpio.OpenPin(m_dc, PinMode.Output);
 
-      _gpio.Write(_res, PinValue.Low);
+      m_gpio.Write(m_res, PinValue.Low);
       Thread.Sleep(1);
-      _gpio.Write(_res, PinValue.High);
+      m_gpio.Write(m_res, PinValue.High);
 
       Write(Instruction.SetOperationMode(instructionSet: InstructionSet.Extended));
       Write(Instruction.SetTemperatureCoefficient(0));
@@ -79,13 +75,13 @@ namespace Celones.Device {
     }
 
     public void Write(byte data)  {
-      _gpio.Write(_dc, PinValue.High);
-      _spi.Write(stackalloc byte[] {data});
+      m_gpio.Write(m_dc, PinValue.High);
+      m_spi.Write(stackalloc byte[] {data});
     }
 
     public void Write(Instruction instruction)  {
-      _gpio.Write(_dc, PinValue.Low);
-      _spi.Write(stackalloc byte[] {instruction.Code});
+      m_gpio.Write(m_dc, PinValue.Low);
+      m_spi.Write(stackalloc byte[] {instruction.Code});
     }
   }
 }

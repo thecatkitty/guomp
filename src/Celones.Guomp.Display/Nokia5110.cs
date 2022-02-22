@@ -1,6 +1,4 @@
-using System;
 using System.Device.Pwm;
-using System.IO;
 using Celones.Device;
 using Celones.Guomp.Extensions;
 using SkiaSharp;
@@ -9,95 +7,92 @@ namespace Celones.Guomp.Display
 {
     public class Nokia5110
     {
-        private Pcd8544 _ctl;
-        private PwmChannel _bl;
+        private readonly Pcd8544 m_ctl;
+        private readonly PwmChannel m_bl;
 
-        private double _contrast;
+        private double m_contrast;
 
-        private SKSurface _img;
-        private SKCanvas _canvas;
-        
-        public int Width => _ctl.DramSizeX;
-        public int Height => _ctl.DramSizeY * 8;
+        private readonly SKSurface m_img;
+
+        public int Width => m_ctl.DramSizeX;
+        public int Height => m_ctl.DramSizeY * 8;
 
         public double Brightness
         {
-            get => _bl.DutyCycle;
-            set => _bl.DutyCycle = value;
+            get => m_bl.DutyCycle;
+            set => m_bl.DutyCycle = value;
         }
 
         public double Contrast
         {
-            get => _contrast;
+            get => m_contrast;
             set {
-                _contrast = value;
-                _ctl.Write(Pcd8544.Instruction.SetOperationMode(instructionSet: Pcd8544.InstructionSet.Extended));
-                _ctl.Write(Pcd8544.Instruction.SetOperationVoltage((int)(60 * _contrast)));
-                _ctl.Write(Pcd8544.Instruction.SetOperationMode(instructionSet: Pcd8544.InstructionSet.Basic));
+                m_contrast = value;
+                m_ctl.Write(Pcd8544.Instruction.SetOperationMode(instructionSet: Pcd8544.InstructionSet.Extended));
+                m_ctl.Write(Pcd8544.Instruction.SetOperationVoltage((int)(60 * m_contrast)));
+                m_ctl.Write(Pcd8544.Instruction.SetOperationMode(instructionSet: Pcd8544.InstructionSet.Basic));
             }
         }
 
-        public SKCanvas Canvas => _canvas;
+        public SKCanvas Canvas { get; }
 
-        public Nokia5110(Pcd8544 controller, PwmChannel backlight)
+        public Nokia5110(Pcd8544 controller, PwmChannel backLight)
         {
-            _ctl = controller;
-            _bl = backlight;
+            m_ctl = controller;
+            m_bl = backLight;
             
             SKImageInfo info = new(Width, Height);
-            _img = SKSurface.Create(info);
-            _canvas = _img.Canvas;
+            m_img = SKSurface.Create(info);
+            Canvas = m_img.Canvas;
         }
 
         public void Initialize()
         {
-            _ctl.Initialize();
-            _bl.Start();
+            m_ctl.Initialize();
+            m_bl.Start();
 
             Brightness = 1.0;
             Contrast = 1.0;
         }
         
         public void Clear() {
-            for (int index = 0; index < _ctl.DramSizeX * _ctl.DramSizeY; index++) {
-                //_ctl.Write(0x00);
+            for (var index = 0; index < m_ctl.DramSizeX * m_ctl.DramSizeY; index++) {
+                //m_ctl.Write(0x00);
             }
 
-            _canvas.Clear(SKColor.Empty);
+            Canvas.Clear(SKColor.Empty);
         }
 
         public void Update() => Update(new SKRectI(0, 0, Width, Height));
 
         public void Update(SKRectI rect)
         {
-            SKPixmap pixels = _img.Snapshot().PeekPixels();
+            var pixels = m_img.Snapshot().PeekPixels();
             rect.Intersect(new SKRectI(0, 0, Width, Height));
 
-            int segmentEnd = (int)Math.Ceiling((double)(rect.Top + rect.Height) / 8.0);
-            for(int segment = (int)rect.Top / 8; segment < segmentEnd; segment++) {
-                int column = (int)rect.Left;
-                int columnEnd = column + (int)rect.Width;
-                _ctl.Write(Device.Pcd8544.Instruction.SetXAddress(column));
-                _ctl.Write(Device.Pcd8544.Instruction.SetYAddress(segment));
+            var segmentEnd = (int)Math.Ceiling((rect.Top + rect.Height) / 8.0);
+            for(var segment = rect.Top / 8; segment < segmentEnd; segment++) {
+                var column = rect.Left;
+                var columnEnd = column + rect.Width;
+                m_ctl.Write(Pcd8544.Instruction.SetXAddress(column));
+                m_ctl.Write(Pcd8544.Instruction.SetYAddress(segment));
 
                 while(column < columnEnd)
                 {
-                    int data = 0;
-                    for (int line = 0; line < 7; line++)
+                    var data = 0;
+                    for (var line = 0; line < 7; line++)
                     {
                         data |= pixels.GetMonochromePixel(column, segment * 8 + line) ? (1 << line) : 0;
                     }
-                    _ctl.Write((byte)data);
+                    m_ctl.Write((byte)data);
                     column++;
                 }
             }
         }
 
-        public void SaveScreenshot(string path)
+        public void Capture(string path)
         {
-            SKImage snapshot = _img.Snapshot();
-            SKData pngImage = snapshot.Encode();
-            File.WriteAllBytes(path, pngImage.ToArray());
+            File.WriteAllBytes(path, m_img.Snapshot().Encode().ToArray());
         } 
     }
 }
