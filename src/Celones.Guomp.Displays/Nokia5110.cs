@@ -12,8 +12,8 @@ namespace Celones.Guomp.Displays
 
         private double m_contrast;
 
-        public override int Width => m_ctl.DramSizeX;
-        public override int Height => m_ctl.DramSizeY * 8;
+        public override int Width => Pcd8544.DramSizeX;
+        public override int Height => Pcd8544.DramSizeY * 8;
 
         public override double Brightness
         {
@@ -36,7 +36,6 @@ namespace Celones.Guomp.Displays
         {
             m_ctl = controller;
             m_bl = backLight;
-            
         }
 
         public override void Initialize()
@@ -49,7 +48,7 @@ namespace Celones.Guomp.Displays
         }
         
         public override void Clear() {
-            for (var index = 0; index < m_ctl.DramSizeX * m_ctl.DramSizeY; index++) {
+            for (var index = 0; index < Pcd8544.DramSizeX * Pcd8544.DramSizeY; index++) {
                 //m_ctl.Write(0x00);
             }
 

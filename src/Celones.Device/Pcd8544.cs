@@ -8,8 +8,8 @@ namespace Celones.Device {
     private readonly int m_res;
     private readonly int m_dc;
 
-    public int DramSizeX => 84;
-    public int DramSizeY => 6;
+    public const int DramSizeX = 84;
+    public const int DramSizeY = 6;
 
     public enum PowerMode {
       Active = 0,
