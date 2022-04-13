@@ -5,7 +5,7 @@ namespace Celones.Guomp.Controls
 {
     public class Menu : ItemsControl
     {
-        private int m_selectedIndex = 0;
+        private int m_selectedIndex;
 
         public Menu()
         {
@@ -14,6 +14,8 @@ namespace Celones.Guomp.Controls
 
         public override void OnRender(SKCanvas canvas)
         {
+            var bounds = canvas.DeviceClipBounds;
+
             var paint = new SKPaint
             {
                 Style = SKPaintStyle.Fill,
@@ -29,15 +31,16 @@ namespace Celones.Guomp.Controls
 
             for (var i = 0; i < Items.Count; i++)
             {
+                var itemBounds = new SKRect(bounds.Left, bounds.Top + i * 12, bounds.Right, bounds.Top + i * 12 + 12);
                 paint.Color = SKColors.Black;
 
                 if (i == m_selectedIndex)
                 {
-                    canvas.DrawRect(new SKRect(0, i * 12, 84, i * 12 + 12), paint);
+                    canvas.DrawRect(itemBounds, paint);
                 }
                 
                 var menuItem = (MenuItem)Items[i];
-                canvas.DrawText(menuItem.Header, 1, i * 12 + 9, font, paint);
+                canvas.DrawText(menuItem.Header, itemBounds.Left + 1, itemBounds.Top + 9, font, paint);
             }
         }
 
