@@ -15,24 +15,22 @@ namespace Celones.Guomp.Controls
         public override void OnRender(SKCanvas canvas)
         {
             var bounds = canvas.DeviceClipBounds;
-
+            var font = Stylesheet.Default.GetFont();
             var paint = new SKPaint
             {
                 Style = SKPaintStyle.Fill,
+                Color = SKColors.Black,
                 BlendMode = SKBlendMode.Xor
             };
 
-            var font = new SKFont
-            {
-                Typeface = SKTypeface.FromFamilyName("Tahoma", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-                Edging = SKFontEdging.Alias,
-                Size = 10
-            };
-
+            var itemHeight = Stylesheet.Default.TextSize + 2 * Stylesheet.Default.MenuItemPadding;
             for (var i = 0; i < Items.Count; i++)
             {
-                var itemBounds = new SKRect(bounds.Left, bounds.Top + i * 12, bounds.Right, bounds.Top + i * 12 + 12);
-                paint.Color = SKColors.Black;
+                var itemBounds = new SKRect(
+                    left: bounds.Left,
+                    top: bounds.Top + i * itemHeight,
+                    right: bounds.Right,
+                    bottom: bounds.Top + (i + 1) * itemHeight);
 
                 if (i == m_selectedIndex)
                 {
@@ -40,7 +38,12 @@ namespace Celones.Guomp.Controls
                 }
                 
                 var menuItem = (MenuItem)Items[i];
-                canvas.DrawText(menuItem.Header, itemBounds.Left + 1, itemBounds.Top + 9, font, paint);
+                canvas.DrawText(
+                    text: menuItem.Header,
+                    x: itemBounds.Left + Stylesheet.Default.MenuItemPadding,
+                    y: itemBounds.Top + Stylesheet.Default.TextSize - 1,
+                    font: font,
+                    paint: paint);
             }
         }
 

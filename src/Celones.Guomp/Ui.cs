@@ -37,14 +37,19 @@ namespace Celones.Guomp
 
             Display.Canvas.DrawText(Root.Header, Display.Width / 2, 8, font, paint);
 
+            var barTop = Stylesheet.Default.TextSize / 2;
             var barWidth = (Display.Width - paint.MeasureText(Root.Header)) / 2 - 2;
-            Display.Canvas.DrawLine(0, 5, barWidth, 5, paint);
-            Display.Canvas.DrawLine(Display.Width - barWidth, 5, Display.Width, 5, paint);
+            Display.Canvas.DrawLine(0, barTop, barWidth, barTop, paint);
+            Display.Canvas.DrawLine(Display.Width - barWidth, barTop, Display.Width, barTop, paint);
 
             foreach (var item in Root.Items)
             {
                 Display.Canvas.Save();
-                Display.Canvas.ClipRect(new SKRect(0, 12, Display.Width, Display.Height));
+                Display.Canvas.ClipRect(new SKRect(
+                    left: 0,
+                    top: Stylesheet.Default.TextSize + 2 * Stylesheet.Default.MenuItemPadding,
+                    right: Display.Width,
+                    bottom: Display.Height));
                 item.OnRender(Display.Canvas);
                 Display.Canvas.Restore();
             }
