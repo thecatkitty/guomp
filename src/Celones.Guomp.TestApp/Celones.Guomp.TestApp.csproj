@@ -13,4 +13,10 @@
     <ProjectReference Include="..\Celones.Guomp\Celones.Guomp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestApp.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

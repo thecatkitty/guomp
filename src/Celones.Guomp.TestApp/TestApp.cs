@@ -1,23 +1,10 @@
-﻿using Celones.Guomp.Displays;
-using SkiaSharp;
+﻿using Celones.Guomp;
+using Celones.Guomp.Displays;
 
 var pcd = new Celones.Device.Pcd8544(null, null, 0, 0);
 var display = new Nokia5110(pcd, null);
+var ui = new Ui("TestApp.xaml", display);
 
-var paint = new SKPaint
-{
-    IsAntialias = false
-};
-
-var font = new SKFont
-{
-    Typeface = SKTypeface.FromFamilyName("Tahoma", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-    Edging = SKFontEdging.Alias,
-    Size = 10
-};
-
-display.Clear();
-display.Canvas.DrawLine(new SKPoint(5, 5), new SKPoint(60, 20), paint);
-display.Canvas.DrawText("Hello World!", 5, 30, font, paint);
+ui.Show();
 
 display.Capture("capture.png");
