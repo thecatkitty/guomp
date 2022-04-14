@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SkiaSharp" Version="2.80.3" />
-    <PackageReference Include="System.Device.Gpio" Version="2.0.0" />
+    <PackageReference Include="SkiaSharp" Version="2.88.0-preview.232" />
+    <PackageReference Include="System.Device.Gpio" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
