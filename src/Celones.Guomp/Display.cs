@@ -23,6 +23,6 @@ namespace Celones.Guomp
         public abstract void Clear();
         public void Update() => Update(new SKRectI(0, 0, Width, Height));
         public abstract void Update(SKRectI rect);
-        public void Capture(string path) => File.WriteAllBytes(path, Surface.Snapshot().Encode().ToArray());
+        public virtual void Capture(string path) => File.WriteAllBytes(path, Surface.Snapshot().Encode().ToArray());
     }
 }

@@ -12,6 +12,8 @@ namespace Celones.Guomp.Displays
 
         private double m_contrast;
 
+        private readonly SKPaint m_capturePaint;
+
         public override int Width => Pcd8544.DramSizeX;
         public override int Height => Pcd8544.DramSizeY * 8;
 
@@ -37,6 +39,19 @@ namespace Celones.Guomp.Displays
         {
             m_ctl = controller;
             m_bl = backLight;
+            
+            m_capturePaint = new SKPaint
+            {
+                ColorFilter = SKColorFilter.CreateCompose(
+                    SKColorFilter.CreateColorMatrix(new []
+                    {
+                        1, 0, 0, 0, 0,
+                        0, 1, 0, 0, 0,
+                        0, 0, 1, 0, 0,
+                        -0.34f, -0.34f, -0.34f, 1, 0
+                    }),
+                    SKColorFilter.CreateHighContrast(true, SKHighContrastConfigInvertStyle.NoInvert, 1.0f))
+            };
         }
 
         public override void Initialize()
@@ -82,6 +97,15 @@ namespace Celones.Guomp.Displays
                     column++;
                 }
             }
+        }
+
+        public override void Capture(string path)
+        {
+
+            var info = new SKImageInfo(Width, Height);
+            var surface = SKSurface.Create(info);
+            surface.Canvas.DrawSurface(Surface, 0, 0, m_capturePaint);
+            File.WriteAllBytes(path, surface.Snapshot().Encode().ToArray());
         }
     }
 }
