@@ -19,7 +19,6 @@ namespace Celones.Guomp
         public void Show()
         {
             Display.Clear();
-            Display.Canvas.Clear(SKColors.Empty);
 
             var font = new SKFont
             {

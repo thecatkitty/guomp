@@ -1,7 +1,7 @@
-using System.Device.Pwm;
 using Celones.Device;
 using Celones.Guomp.Extensions;
 using SkiaSharp;
+using System.Device.Pwm;
 
 namespace Celones.Guomp.Displays
 {
@@ -24,7 +24,8 @@ namespace Celones.Guomp.Displays
         public override double Contrast
         {
             get => m_contrast;
-            set {
+            set
+            {
                 m_contrast = value;
                 m_ctl.Write(Pcd8544.Instruction.SetOperationMode(instructionSet: Pcd8544.InstructionSet.Extended));
                 m_ctl.Write(Pcd8544.Instruction.SetOperationVoltage((int)(60 * m_contrast)));
@@ -46,10 +47,12 @@ namespace Celones.Guomp.Displays
             Brightness = 1.0;
             Contrast = 1.0;
         }
-        
-        public override void Clear() {
-            for (var index = 0; index < Pcd8544.DramSizeX * Pcd8544.DramSizeY; index++) {
-                //m_ctl.Write(0x00);
+
+        public override void Clear()
+        {
+            for (var index = 0; index < Pcd8544.DramSizeX * Pcd8544.DramSizeY; index++)
+            {
+                m_ctl.Write(0x00);
             }
 
             Canvas.Clear(SKColor.Empty);
@@ -61,13 +64,14 @@ namespace Celones.Guomp.Displays
             rect.Intersect(new SKRectI(0, 0, Width, Height));
 
             var segmentEnd = (int)Math.Ceiling((rect.Top + rect.Height) / 8.0);
-            for(var segment = rect.Top / 8; segment < segmentEnd; segment++) {
+            for (var segment = rect.Top / 8; segment < segmentEnd; segment++)
+            {
                 var column = rect.Left;
                 var columnEnd = column + rect.Width;
                 m_ctl.Write(Pcd8544.Instruction.SetXAddress(column));
                 m_ctl.Write(Pcd8544.Instruction.SetYAddress(segment));
 
-                while(column < columnEnd)
+                while (column < columnEnd)
                 {
                     var data = 0;
                     for (var line = 0; line < 7; line++)
